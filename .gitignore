@@ -2,3 +2,5 @@
 *.npy
 *.pth
 /data
+/mmcv
+/mmdetection3d
