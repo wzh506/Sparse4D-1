@@ -1,0 +1,11 @@
+tar -xzvf /gpu-data/songjinlian/data/nuscenes/v1.0-trainval01_blobs.tgz -C /data/wangzhaohui/github/Sparse4D/data/nuscenes > nohup1.out 2>&1 &
+tar -xzvf /gpu-data/songjinlian/data/nuscenes/v1.0-trainval02_blobs.tgz -C /data/wangzhaohui/github/Sparse4D/data/nuscenes > nohup2.out 2>&1 &
+tar -xzvf /gpu-data/songjinlian/data/nuscenes/v1.0-trainval03_blobs.tgz -C /data/wangzhaohui/github/Sparse4D/data/nuscenes > nohup3.out 2>&1 &
+tar -xzvf /gpu-data/songjinlian/data/nuscenes/v1.0-trainval04_blobs.tgz -C /data/wangzhaohui/github/Sparse4D/data/nuscenes > nohup4.out 2>&1 &
+tar -xzvf /gpu-data/songjinlian/data/nuscenes/v1.0-trainval05_blobs.tgz -C /data/wangzhaohui/github/Sparse4D/data/nuscenes > nohup5.out 2>&1 &
+tar -xzvf /gpu-data/songjinlian/data/nuscenes/v1.0-trainval06_blobs.tgz -C /data/wangzhaohui/github/Sparse4D/data/nuscenes > nohup6.out 2>&1 &
+tar -xzvf /gpu-data/songjinlian/data/nuscenes/v1.0-trainval07_blobs.tgz -C /data/wangzhaohui/github/Sparse4D/data/nuscenes > nohup7.out 2>&1 &
+tar -xzvf /gpu-data/songjinlian/data/nuscenes/v1.0-trainval08_blobs.tgz -C /data/wangzhaohui/github/Sparse4D/data/nuscenes > nohup8.out 2>&1 &
+tar -xzvf /gpu-data/songjinlian/data/nuscenes/v1.0-trainval09_blobs.tgz -C /data/wangzhaohui/github/Sparse4D/data/nuscenes > nohup9.out 2>&1 &
+tar -xzvf /gpu-data/songjinlian/data/nuscenes/v1.0-trainval10_blobs.tgz -C /data/wangzhaohui/github/Sparse4D/data/nuscenes > nohup10.out 2>&1 &
+#nohup bash zip.sh > nohup.out 2>&1 & #/data/wangzhaohui/github/Sparse4D/data/nuscenes #456029

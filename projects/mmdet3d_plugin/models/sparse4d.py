@@ -61,17 +61,17 @@ class Sparse4D(BaseDetector):
         bs = img.shape[0]
         if img.dim() == 5:  # multi-view
             num_cams = img.shape[1]
-            img = img.flatten(end_dim=1)
+            img = img.flatten(end_dim=1)#删除一维
         else:
             num_cams = 1
         if self.use_grid_mask:
-            img = self.grid_mask(img)
+            img = self.grid_mask(img)#数据增强的方法，随机遮挡图像一部分
         if "metas" in signature(self.img_backbone.forward).parameters:
             feature_maps = self.img_backbone(img, num_cams, metas=metas)
         else:
-            feature_maps = self.img_backbone(img)
+            feature_maps = self.img_backbone(img)#输出是四个尺度的特征图（w,h不断变小，dim不断变大）
         if self.img_neck is not None:
-            feature_maps = list(self.img_neck(feature_maps))
+            feature_maps = list(self.img_neck(feature_maps))#输出是四个尺度的特征图（w,h不断变小，dim全都为256维相同）
         for i, feat in enumerate(feature_maps):
             feature_maps[i] = torch.reshape(
                 feat, (bs, num_cams) + feat.shape[1:]
@@ -79,7 +79,7 @@ class Sparse4D(BaseDetector):
         if return_depth and self.depth_branch is not None:
             depths = self.depth_branch(feature_maps, metas.get("focal"))
         else:
-            depths = None
+            depths = None#不使用depths信息
         if self.use_deformable_func:
             feature_maps = DAF.feature_maps_format(feature_maps)
         if return_depth:
@@ -93,8 +93,8 @@ class Sparse4D(BaseDetector):
         else:
             return self.forward_test(**data)
 
-    def forward_train(self, **data):
-        img = data.pop("img")
+    def forward_train(self, **data):#其实最终调用的就是这个函数,这里打个断点即可
+        img = data.pop("img") #输入到这里的data是原始数据吗
         feature_maps, depths = self.extract_feat(img, True, data)
 
         if "data_queue" in data or "future_data_queue" in data:
@@ -113,7 +113,7 @@ class Sparse4D(BaseDetector):
 
         cls_scores, reg_preds = self.head(
             feature_maps, data, feature_queue, meta_queue
-        )
+        ) #进入head进行运算，重点核心代码都在这里
         if self.use_deformable_func:
             feature_maps = DAF.feature_maps_format(feature_maps, inverse=True)
         output = self.head.loss(cls_scores, reg_preds, data, feature_maps)

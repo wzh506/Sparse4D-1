@@ -1,0 +1,4 @@
+1.数据集处理的命令
+nohup python tools/create_data.py nuscenes --root-path /data/wangzhaohui/github/Sparse4D/data/nuscenes --out-dir /data/wangzhaohui/github/Sparse4D/data/nuscenes_cam --extra-tag nuscenes > nohup.out 2>&1 &
+2.数据集不完整
+nohup tar -xzvf /gpu-data/songjinlian/data/nuscenes/v1.0-trainval01_blobs.tgz -C /data/wangzhaohui/github/Sparse4D/data/nuscenes > nohup.out 2>&1 &

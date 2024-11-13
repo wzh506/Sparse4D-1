@@ -127,7 +127,7 @@ class Sparse4DHead(BaseModule):
         metas: dict,
         feature_queue=None,
         meta_queue=None,
-    ):
+    ):#        cls_scores, reg_preds = self.head(feature_maps, data, feature_queue, meta_queue) #进入head进行运算，重点核心代码都在这里
         if isinstance(feature_maps, torch.Tensor):
             feature_maps = [feature_maps]
         batch_size = feature_maps[0].shape[0]
@@ -137,7 +137,7 @@ class Sparse4DHead(BaseModule):
             temp_instance_feature,
             temp_anchor,
             time_interval,
-        ) = self.instance_bank.get(batch_size, metas)
+        ) = self.instance_bank.get(batch_size, metas)#获得init_feature和anchor,temp都是none
         anchor_embed = self.anchor_encoder(anchor)
         if temp_anchor is not None:
             temp_anchor_embed = self.anchor_encoder(temp_anchor)

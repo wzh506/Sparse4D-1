@@ -1,0 +1,20 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "sparse4d",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/tools/wzh.py",
+            "args": [
+                "projects/configs/sparse4d_r101_H1.py",
+                "--work-dir=work_dirs/sparse4d_r101_H1"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}:${env:PYTHONPATH}"
+            }
+        }
+    ]
+}

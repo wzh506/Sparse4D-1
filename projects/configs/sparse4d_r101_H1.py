@@ -17,7 +17,7 @@ class_names = [
 
 num_classes = len(class_names)
 embed_dims = 256
-num_groups = 8
+num_groups = 8 #原版是8
 num_decoder = 6
 model = dict(
     type='Sparse4D',
@@ -44,7 +44,7 @@ model = dict(
         relu_before_extra_convs=True,
         in_channels=[256, 512, 1024, 2048],
     ),
-    head=dict(
+    head=dict( #所有模型定义只需要在这里修改！
         type="Sparse4DHead",
         cls_threshold_to_reg=0.05,
         num_decoder=num_decoder,
@@ -225,7 +225,7 @@ data_basic_config = dict(
 
 data = dict(
     samples_per_gpu=1,
-    workers_per_gpu=2,
+    workers_per_gpu=0,#原版为2
     train=dict(
         **data_basic_config,
         ann_file=anno_root + 'nuscenes_infos_train.pkl',

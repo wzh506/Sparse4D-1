@@ -1,0 +1,5 @@
+# ninja log v5
+0	9277	1731045688863779891	/data/wangzhaohui/github/Sparse4D/projects/mmdet3d_plugin/ops/build/temp.linux-x86_64-3.8/src/deformable_aggregation_cuda.o	e47ca1cf025f9852
+0	17196	1731045696775893869	/data/wangzhaohui/github/Sparse4D/projects/mmdet3d_plugin/ops/build/temp.linux-x86_64-3.8/src/deformable_aggregation.o	75a2e8b79578ead2
+3	9141	1731293891197810472	/data/wangzhaohui/github/Sparse4D/projects/mmdet3d_plugin/ops/build/temp.linux-x86_64-3.8/src/deformable_aggregation_cuda.o	1db5975fbb530ed3
+3	16993	1731293899045922987	/data/wangzhaohui/github/Sparse4D/projects/mmdet3d_plugin/ops/build/temp.linux-x86_64-3.8/src/deformable_aggregation.o	5a40fbcb55929171

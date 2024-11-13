@@ -21,7 +21,7 @@ def topk(confidence, k, *inputs):
     return confidence, outputs
 
 
-@PLUGIN_LAYERS.register_module()
+@PLUGIN_LAYERS.register_module() #这个module都没有forward函数
 class InstanceBank(nn.Module):
     def __init__(
         self,
@@ -78,10 +78,10 @@ class InstanceBank(nn.Module):
 
     def get(self, batch_size, metas=None):
         instance_feature = torch.tile(
-            self.instance_feature[None], (batch_size, 1, 1)
+            self.instance_feature[None], (batch_size, 1, 1) #900,256
         )
-        anchor = torch.tile(self.anchor[None], (batch_size, 1, 1))
-
+        anchor = torch.tile(self.anchor[None], (batch_size, 1, 1))#900,11
+        #这两个都是预先设定的,num=900,也就是说最大查找900个anchor
         if (
             self.cached_anchor is not None
             and batch_size == self.cached_anchor.shape[0]
@@ -106,7 +106,7 @@ class InstanceBank(nn.Module):
             )
         else:
             self.cached_feature = None
-            self.cached_anchor = None
+            self.cached_anchor = None#这个是不是多个时刻的
             self.confidence = None
 
         if (
@@ -136,7 +136,7 @@ class InstanceBank(nn.Module):
             )
         return (
             instance_feature,
-            anchor,
+            anchor,#init_anchor
             self.cached_feature,
             self.cached_anchor,
             time_interval,

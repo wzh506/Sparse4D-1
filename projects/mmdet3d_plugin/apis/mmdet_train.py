@@ -136,7 +136,7 @@ def custom_train_detector(
 
     # an ugly workaround to make .log and .log.json filenames the same
     runner.timestamp = timestamp
-
+ 
     # fp16 setting
     fp16_cfg = cfg.get("fp16", None)
     if fp16_cfg is not None:
