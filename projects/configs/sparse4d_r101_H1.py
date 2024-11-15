@@ -16,9 +16,9 @@ class_names = [
 ]
 
 num_classes = len(class_names)
-embed_dims = 256
+embed_dims = 32 #原版时256
 num_groups = 8 #原版是8
-num_decoder = 6
+num_decoder = 6 #原版是6
 model = dict(
     type='Sparse4D',
     use_grid_mask=True,

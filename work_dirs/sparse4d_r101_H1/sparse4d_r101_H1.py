@@ -29,7 +29,7 @@ class_names = [
     'motorcycle', 'bicycle', 'pedestrian', 'traffic_cone'
 ]
 num_classes = 10
-embed_dims = 256
+embed_dims = 32
 num_groups = 8
 num_decoder = 6
 model = dict(
@@ -51,7 +51,7 @@ model = dict(
         type='FPN',
         num_outs=4,
         start_level=1,
-        out_channels=256,
+        out_channels=32,
         add_extra_convs='on_output',
         relu_before_extra_convs=True,
         in_channels=[256, 512, 1024, 2048]),
@@ -62,28 +62,28 @@ model = dict(
         instance_bank=dict(
             type='InstanceBank',
             num_anchor=900,
-            embed_dims=256,
+            embed_dims=32,
             anchor='nuscenes_kmeans900.npy',
             anchor_handler=dict(type='SparseBox3DKeyPointsGenerator')),
         anchor_encoder=dict(
-            type='SparseBox3DEncoder', embed_dims=256, vel_dims=3),
+            type='SparseBox3DEncoder', embed_dims=32, vel_dims=3),
         graph_model=dict(
             type='MultiheadAttention',
-            embed_dims=256,
+            embed_dims=32,
             num_heads=8,
             batch_first=True,
             dropout=0.1),
-        norm_layer=dict(type='LN', normalized_shape=256),
+        norm_layer=dict(type='LN', normalized_shape=32),
         ffn=dict(
             type='FFN',
-            embed_dims=256,
-            feedforward_channels=512,
+            embed_dims=32,
+            feedforward_channels=64,
             num_fcs=2,
             ffn_drop=0.1,
             act_cfg=dict(type='ReLU', inplace=True)),
         deformable_model=dict(
             type='DeformableFeatureAggregation',
-            embed_dims=256,
+            embed_dims=32,
             num_groups=8,
             num_levels=4,
             num_cams=6,
@@ -95,7 +95,7 @@ model = dict(
                            [0, 0.45, 0], [0, -0.45, 0], [0, 0, 0.45],
                            [0, 0, -0.45]])),
         refine_layer=dict(
-            type='SparseBox3DRefinementModule', embed_dims=256, num_cls=10),
+            type='SparseBox3DRefinementModule', embed_dims=32, num_cls=10),
         sampler=dict(
             type='SparseBox3DTarget',
             cls_weight=2.0,
@@ -118,7 +118,7 @@ model = dict(
             type='SparseBox3DKeyPointsGenerator',
             fix_scale=[[0, 0, 0], [0.45, 0, 0], [-0.45, 0, 0], [0, 0.45, 0],
                        [0, -0.45, 0], [0, 0, 0.45], [0, 0, -0.45]]),
-        depth_module=dict(type='DepthReweightModule', embed_dims=256)))
+        depth_module=dict(type='DepthReweightModule', embed_dims=32)))
 dataset_type = 'NuScenes3DDetTrackDataset'
 data_root = 'data/nuscenes/'
 anno_root = 'data/nuscenes_cam/'

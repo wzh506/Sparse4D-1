@@ -7,12 +7,13 @@
             "request": "launch",
             "program": "${workspaceFolder}/tools/wzh.py",
             "args": [
-                "projects/configs/sparse4d_r101_H1.py",
-                "--work-dir=work_dirs/sparse4d_r101_H1"
+                "projects/configs/sparse4d_r101_H4.py",
+                // "--work-dir=work_dirs/sparse4d_r101_H1"
             ],
             "console": "integratedTerminal",
-            "justMyCode": false,
+            "justMyCode": true,//最好设为true，不然会跳到nn.module的代码中去
             "env": {
+                // "CUDA_VISIBLE_DEVICES": "", // 没有显卡可用时就这么设置
                 "PYTHONPATH": "${workspaceFolder}:${env:PYTHONPATH}"
             }
         }

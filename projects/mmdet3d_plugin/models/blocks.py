@@ -46,7 +46,7 @@ def linear_relu_ln(embed_dims, in_loops, out_loops, input_dims=None):
 
 
 @ATTENTION.register_module()
-class DeformableFeatureAggregation(BaseModule):
+class DeformableFeatureAggregation(BaseModule):#右侧函数，重中之重
     def __init__(
         self,
         embed_dims: int = 256,
@@ -124,12 +124,12 @@ class DeformableFeatureAggregation(BaseModule):
         bs, num_anchor = instance_feature.shape[:2]
         if feature_queue is not None and len(feature_queue) > 0:
             T_cur2temp_list = []
-            for meta in meta_queue:
+            for meta in meta_queue: #对每一个时刻
                 T_cur2temp_list.append(
                     instance_feature.new_tensor(
                         [
                             x["T_global_inv"]
-                            @ metas["img_metas"][i]["T_global"]
+                            @ metas["img_metas"][i]["T_global"]   #计算每个时刻相对于这个时刻的变换矩阵 T-1 -> T
                             for i, x in enumerate(meta["img_metas"])
                         ]
                     )
@@ -140,7 +140,7 @@ class DeformableFeatureAggregation(BaseModule):
                 T_cur2temp_list,
                 metas["timestamp"],
                 [meta["timestamp"] for meta in meta_queue],
-            )
+            )# timestamp是时间戳，用来计算时间间隔
             temp_anchors = self.kps_generator.anchor_projection(
                 anchor,
                 T_cur2temp_list,
@@ -161,7 +161,7 @@ class DeformableFeatureAggregation(BaseModule):
                 for x in [metas] + meta_queue
             ]
         else:
-            key_points = self.kps_generator(anchor, instance_feature)
+            key_points = self.kps_generator(anchor, instance_feature)#计算关键点
             temp_key_points_list = (
                 feature_queue
             ) = meta_queue = temp_anchor_embeds = temp_anchors = []
@@ -195,7 +195,7 @@ class DeformableFeatureAggregation(BaseModule):
             if self.use_temporal_anchor_embed and anchor_encoder is not None:
                 weights = self._get_weights(
                     instance_feature, temp_anchor_embed, metas
-                )
+                )#这是干嘛
             if self.use_deformable_func:
                 weights = (
                     weights.permute(0, 1, 4, 2, 3, 5)

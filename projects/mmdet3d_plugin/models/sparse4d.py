@@ -97,7 +97,7 @@ class Sparse4D(BaseDetector):
         img = data.pop("img") #输入到这里的data是原始数据吗
         feature_maps, depths = self.extract_feat(img, True, data)
 
-        if "data_queue" in data or "future_data_queue" in data:
+        if "data_queue" in data or "future_data_queue" in data:#连接前3个时刻的数据！
             feature_queue = []
             meta_queue = []
             with torch.no_grad():

@@ -34,7 +34,7 @@ print('------------------------------------------------------------------------'
 print('os',os.getcwd())
 
 #  export PYTHONPATH=$PYTHONPATH:./
-# bash local_train.sh sparse4d_r101_H1
+# bash local_train.sh sparse4d_r101_H4
 # python tools/wzh.py projects/configs/sparse4d_r101_H1.py --work-dir=work_dirs/sparse4d_r101_H1
 # 目标：创建一个model以及一个dataset，然后forward，其他的不管
 if __name__ == "__main__":

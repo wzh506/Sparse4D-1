@@ -125,7 +125,7 @@ class Sparse4DHead(BaseModule):
         self,
         feature_maps: Union[torch.Tensor, List],
         metas: dict,
-        feature_queue=None,
+        feature_queue=None,#前端时刻都数据
         meta_queue=None,
     ):#        cls_scores, reg_preds = self.head(feature_maps, data, feature_queue, meta_queue) #进入head进行运算，重点核心代码都在这里
         if isinstance(feature_maps, torch.Tensor):
@@ -138,16 +138,16 @@ class Sparse4DHead(BaseModule):
             temp_anchor,
             time_interval,
         ) = self.instance_bank.get(batch_size, metas)#获得init_feature和anchor,temp都是none
-        anchor_embed = self.anchor_encoder(anchor)
+        anchor_embed = self.anchor_encoder(anchor) # 900, 11,11每个维度都有特殊含义，最后refine调整位置和大小---->900，32
         if temp_anchor is not None:
             temp_anchor_embed = self.anchor_encoder(temp_anchor)
         else:
             temp_anchor_embed = None
-
+        #这些应该是利用前段时刻的数据
         _feature_queue = self.instance_bank.feature_queue
         _meta_queue = self.instance_bank.meta_queue
         if feature_queue is not None and _feature_queue is not None:
-            feature_queue = feature_queue + _feature_queue
+            feature_queue = feature_queue + _feature_queue #是list，直接+其实是添加元素
             meta_queue = meta_queue + _meta_queue
         elif feature_queue is None:
             feature_queue = _feature_queue
@@ -180,7 +180,7 @@ class Sparse4DHead(BaseModule):
                     instance_feature,
                     anchor,
                     anchor_embed,
-                    feature_maps,
+                    feature_maps,#作为kv
                     metas,
                     feature_queue=feature_queue,
                     meta_queue=meta_queue,

@@ -6,3 +6,7 @@
 /mmdetection3d
 mmcv
 mmdetection3d
+/work_dirs
+*.tar.gz
+*.log
+nuscenes.log

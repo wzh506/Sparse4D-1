@@ -1,0 +1,1 @@
+nohup tar -czvf nuscenes.tar.gz /data > nuscenes.log 2>&1 &

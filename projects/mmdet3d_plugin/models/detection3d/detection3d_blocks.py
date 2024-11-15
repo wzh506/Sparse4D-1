@@ -37,7 +37,7 @@ class SparseBox3DEncoder(BaseModule):
             self.vel_fc = embedding_layer(self.vel_dims)
         self.output_fc = embedding_layer(self.embed_dims)
 
-    def forward(self, box_3d: torch.Tensor):
+    def forward(self, box_3d: torch.Tensor):#box_3d=anchor,
         pos_feat = self.pos_fc(box_3d[..., [X, Y, Z]])
         size_feat = self.size_fc(box_3d[..., [W, L, H]])
         yaw_feat = self.yaw_fc(box_3d[..., [SIN_YAW, COS_YAW]])
@@ -140,7 +140,7 @@ class SparseBox3DKeyPointsGenerator(BaseModule):
         if self.num_learnable_pts > 0:
             xavier_init(self.learnable_fc, distribution="uniform", bias=0.0)
 
-    def forward(
+    def forward(  
         self,
         anchor,
         instance_feature=None,
@@ -169,7 +169,7 @@ class SparseBox3DKeyPointsGenerator(BaseModule):
         key_points = torch.matmul(
             rotation_mat[:, :, None], key_points[..., None]
         ).squeeze(-1)
-        key_points = key_points + anchor[..., None, [X, Y, Z]]
+        key_points = key_points + anchor[..., None, [X, Y, Z]]#位移+x,y,z,anchor,居然是没有归一化的，单位应该是像素（不像是m)
 
         if (
             cur_timestamp is None
@@ -177,17 +177,17 @@ class SparseBox3DKeyPointsGenerator(BaseModule):
             or T_cur2temp_list is None
             or len(temp_timestamps) == 0
         ):
-            return key_points
-
+            return key_points   #1,900,13,3
+        # 根据速度确定？
         temp_key_points_list = []
         velocity = anchor[..., VX:]
         for i, t_time in enumerate(temp_timestamps):
-            time_interval = cur_timestamp - t_time
+            time_interval = cur_timestamp - t_time #这些东西的时间单位和距离单位是什么啊
             translation = (
                 velocity
                 * time_interval.to(dtype=velocity.dtype)[:, None, None]
-            )
-            temp_key_points = key_points - translation[:, :, None]
+            )#时间间隔*速度=位移
+            temp_key_points = key_points - translation[:, :, None]#在当前坐标系下过去这些点在上一位置
             T_cur2temp = T_cur2temp_list[i].to(dtype=key_points.dtype)
             temp_key_points = (
                 T_cur2temp[:, None, None, :3]
@@ -198,22 +198,22 @@ class SparseBox3DKeyPointsGenerator(BaseModule):
                     ],
                     dim=-1,
                 ).unsqueeze(-1)
-            )
+            )#再把这个点变换到上一坐标系下，所以所有key_points都是在当前坐标系下(或者叫标准激光雷达坐标系）
             temp_key_points = temp_key_points.squeeze(-1)
             temp_key_points_list.append(temp_key_points)
         return key_points, temp_key_points_list
 
     @staticmethod
     def anchor_projection(
-        anchor,
+        anchor,   #这是当前时刻的anchor,如何投影，而且还要使用YAW
         T_src2dst_list,
         src_timestamp=None,
         dst_timestamps=None,
     ):
         dst_anchors = []
-        for i in range(len(T_src2dst_list)):
+        for i in range(len(T_src2dst_list)):#遍历所有时刻
             dst_anchor = anchor.clone()
-            vel = anchor[..., VX:]
+            vel = anchor[..., VX:]#VX，VY，VZ
             vel_dim = vel.shape[-1]
             T_src2dst = torch.unsqueeze(
                 T_src2dst_list[i].to(dtype=anchor.dtype), dim=1
