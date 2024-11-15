@@ -237,7 +237,7 @@ class DeformableFeatureAggregation(BaseModule):#右侧函数，重中之重,在�
             # Hirarchy Fusion Module
             if features is None:
                 features = temp_features_next
-            elif self.temp_module is not None:#这里就是用temporal module来融合不同时刻的特征，还要计算前时刻的特征,注意！这里是迭代运算的
+            elif self.temp_module is not None:#这里就是用temporal module来融合不同时刻的特征，还要计算前时刻的特征,注意！这里是迭代运算的#
                 features = self.temp_module(
                     features, temp_features_next, time_interval
                 )
