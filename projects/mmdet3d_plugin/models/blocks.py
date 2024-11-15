@@ -46,7 +46,7 @@ def linear_relu_ln(embed_dims, in_loops, out_loops, input_dims=None):
 
 
 @ATTENTION.register_module()
-class DeformableFeatureAggregation(BaseModule):#右侧函数，重中之重
+class DeformableFeatureAggregation(BaseModule):#右侧函数，重中之重,在后续v2,v3中也有使用
     def __init__(
         self,
         embed_dims: int = 256,
@@ -146,7 +146,7 @@ class DeformableFeatureAggregation(BaseModule):#右侧函数，重中之重
                 T_cur2temp_list,
                 metas["timestamp"],
                 [meta["timestamp"] for meta in meta_queue],
-            )
+            ) #将当前时刻的anchor投影到其他时刻(其他时刻坐标系下)的位置，数据等，找回过去的位置（anchor是这么变化来的）
             temp_anchor_embeds = [
                 anchor_encoder(x)
                 if self.use_temporal_anchor_embed
@@ -185,17 +185,17 @@ class DeformableFeatureAggregation(BaseModule):#右侧函数，重中之重
             temp_anchor,
             time_interval,
         ) in zip(
-            feature_queue[::-1] + [feature_maps],
+            feature_queue[::-1] + [feature_maps],#反转时间：—3,-2,-1,0 这样作为时刻输入
             meta_queue[::-1] + [metas],
             temp_key_points_list[::-1] + [key_points],
             temp_anchor_embeds[::-1] + [anchor_embed],
             temp_anchors[::-1] + [anchor],
             time_intervals[::-1],
-        ):
+        ):  
             if self.use_temporal_anchor_embed and anchor_encoder is not None:
                 weights = self._get_weights(
                     instance_feature, temp_anchor_embed, metas
-                )#这是干嘛
+                )#torch.Size([1, 900, 6, 4, 13, 8]),这里获得注意力的权重，这里传入的居然不是temp_metas,总之这里获得group weights(对于某个时刻的）)
             if self.use_deformable_func:
                 weights = (
                     weights.permute(0, 1, 4, 2, 3, 5)
@@ -217,7 +217,7 @@ class DeformableFeatureAggregation(BaseModule):#右侧函数，重中之重
                     .permute(0, 2, 3, 1, 4)
                     .reshape(bs, num_anchor * self.num_pts, self.num_cams, 2)
                 )
-                temp_features_next = DAF.apply(
+                temp_features_next = DAF.apply(#居然这里没有哟个这个
                     *temp_feature_maps, points_2d, weights
                 ).reshape(bs, num_anchor, self.num_pts, self.embed_dims)
             else:
@@ -226,18 +226,18 @@ class DeformableFeatureAggregation(BaseModule):#右侧函数，重中之重
                     temp_key_points,
                     temp_metas["projection_mat"],
                     temp_metas.get("image_wh"),
-                )
+                ) #当前时刻的特征图，关键点，投影矩阵，图像大小,不同时刻分开处理，v2后这个被用CUDA实现了
                 temp_features_next = self.multi_view_level_fusion(
                     temp_features_next, weights
-                )
+                ) #融合不同视角的特征，不同相机的通道减少了，变为整个感知野（bev）
             if depth_module is not None:
-                temp_features_next = depth_module(
+                temp_features_next = depth_module( #这个和深度有关的就先不看了
                     temp_features_next, temp_anchor[:, :, None]
                 )
-
+            # Hirarchy Fusion Module
             if features is None:
                 features = temp_features_next
-            elif self.temp_module is not None:
+            elif self.temp_module is not None:#这里就是用temporal module来融合不同时刻的特征，还要计算前时刻的特征,注意！这里是迭代运算的
                 features = self.temp_module(
                     features, temp_features_next, time_interval
                 )
@@ -252,9 +252,9 @@ class DeformableFeatureAggregation(BaseModule):#右侧函数，重中之重
             output = torch.cat([output, instance_feature], dim=-1)
         return output
 
-    def _get_weights(self, instance_feature, anchor_embed, metas=None):
+    def _get_weights(self, instance_feature, anchor_embed, metas=None):#大小均为torch.Size([1, 900, 32])
         bs, num_anchor = instance_feature.shape[:2]
-        feature = instance_feature + anchor_embed
+        feature = instance_feature + anchor_embed #直接相加
         if self.camera_encoder is not None:
             camera_embed = self.camera_encoder(
                 metas["projection_mat"][:, :, :3].reshape(
@@ -297,7 +297,7 @@ class DeformableFeatureAggregation(BaseModule):#右侧函数，重中之重
         ).squeeze(-1)
         points_2d = points_2d[..., :2] / torch.clamp(
             points_2d[..., 2:3], min=1e-5
-        )
+        ) #这里是投影到2d平面上，然后除以z，得到归一化的坐标
         if image_wh is not None:
             points_2d = points_2d / image_wh[:, :, None, None]
         return points_2d
@@ -315,8 +315,8 @@ class DeformableFeatureAggregation(BaseModule):#右侧函数，重中之重
 
         points_2d = DeformableFeatureAggregation.project_points(
             key_points, projection_mat, image_wh
-        )
-        points_2d = points_2d * 2 - 1
+        ) # key_points torch.Size([1, 6, 900, 13, 3]),points_2d torch.Size([1, 6, 900, 13, 2]) #13是关键点数（6+7））
+        points_2d = points_2d * 2 - 1 #不知道，可能是图片大小放缩
         points_2d = points_2d.flatten(end_dim=1)
 
         features = []
@@ -325,7 +325,7 @@ class DeformableFeatureAggregation(BaseModule):#右侧函数，重中之重
                 torch.nn.functional.grid_sample(
                     fm.flatten(end_dim=1), points_2d
                 )
-            )
+            ) #biliner插值
         features = torch.stack(features, dim=1)
         features = features.reshape(
             bs, num_cams, num_levels, -1, num_anchor, num_pts

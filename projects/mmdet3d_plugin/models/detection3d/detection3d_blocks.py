@@ -231,15 +231,15 @@ class SparseBox3DKeyPointsGenerator(BaseModule):
                     T_src2dst[..., :3, :3], center[..., None]
                 ).squeeze(dim=-1)
                 + T_src2dst[..., :3, 3]
-            )
+            ) #现在时刻这些anchor的中心点在过去坐标系下的位置
 
             dst_anchor[..., [COS_YAW, SIN_YAW]] = torch.matmul(
                 T_src2dst[..., :2, :2], dst_anchor[..., [COS_YAW, SIN_YAW], None]
-            ).squeeze(-1)
+            ).squeeze(-1) #在过去坐标系下的角度
 
             dst_anchor[..., VX:] = torch.matmul(
                 T_src2dst[..., :vel_dim, :vel_dim], vel[..., None]
-            ).squeeze(-1)
+            ).squeeze(-1) #在过去坐标系下的速度
 
             dst_anchors.append(dst_anchor)
         return dst_anchors
