@@ -155,7 +155,7 @@ class Sparse4DHead(BaseModule):
 
         prediction = []
         classification = []
-        for i, op in enumerate(self.operation_order):
+        for i, op in enumerate(self.operation_order):#按照一个dict存储的
             if op == "temp_gnn":
                 instance_feature = self.layers[i](
                     instance_feature,
@@ -164,7 +164,7 @@ class Sparse4DHead(BaseModule):
                     query_pos=anchor_embed,
                     key_pos=temp_anchor_embed,
                 )
-            elif op == "gnn":
+            elif op == "gnn":#对应MultiheadAttention。。。
                 instance_feature = self.layers[i](
                     instance_feature,
                     query_pos=anchor_embed,
@@ -175,7 +175,7 @@ class Sparse4DHead(BaseModule):
                 identity = instance_feature
             elif op == "add":
                 instance_feature = instance_feature + identity
-            elif op == "deformable":
+            elif op == "deformable":#对应DeformableFeatureAggregation
                 instance_feature = self.layers[i](
                     instance_feature,
                     anchor,
@@ -187,7 +187,7 @@ class Sparse4DHead(BaseModule):
                     depth_module=self.depth_module,
                     anchor_encoder=self.anchor_encoder,
                 )
-            elif op == "refine":
+            elif op == "refine":#最后一层，作为最后输出
                 anchor, cls = self.layers[i](
                     instance_feature,
                     anchor,
@@ -199,7 +199,7 @@ class Sparse4DHead(BaseModule):
                         or i == len(self.operation_order) - 1
                     ),
                 )
-                prediction.append(anchor)
+                prediction.append(anchor)#每次refine的结果都会被添加到prediction中，如何使用？
                 classification.append(cls)
                 if len(prediction) == self.num_single_frame_decoder:
                     instance_feature, anchor = self.instance_bank.update(

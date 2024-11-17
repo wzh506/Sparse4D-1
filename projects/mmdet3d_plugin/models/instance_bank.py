@@ -196,4 +196,4 @@ class InstanceBank(nn.Module):
                 (self.cached_feature, self.cached_anchor),
             ) = topk(
                 confidence, self.num_temp_instances, instance_feature, anchor
-            )
+            ) #这里根据confidence选择了一部分instance_feature和anchor

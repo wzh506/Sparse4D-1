@@ -244,7 +244,7 @@ class DeformableFeatureAggregation(BaseModule):#右侧函数，重中之重,在�
             else:
                 features = features + temp_features_next
 
-        features = features.sum(dim=2)  # fuse multi-point features
+        features = features.sum(dim=2)  # fuse multi-point features.13个点变为1
         output = self.proj_drop(self.output_proj(features))
         if self.residual_mode == "add":
             output = output + instance_feature
@@ -375,7 +375,7 @@ class LinearFusionModule(BaseModule):
             temp_weight = self.alpha ** torch.abs(time_interval * self.beta)
             feature_2 = torch.transpose(
                 feature_2.transpose(0, -1) * temp_weight, 0, -1
-            )
+            ) #把时间间隔大小作为权重，然后乘到feature_2上
         return self.fusion_layer(torch.cat([feature_1, feature_2], dim=-1))
 
 

@@ -102,17 +102,17 @@ class SparseBox3DRefinementModule(BaseModule):
         if self.normalize_yaw:
             output[..., [SIN_YAW, COS_YAW]] = torch.nn.functional.normalize(
                 output[..., [SIN_YAW, COS_YAW]], dim=-1
-            )
+            )#归一化到1，计算角度
         if self.output_dim > 8:
             if not isinstance(time_interval, torch.Tensor):
                 time_interval = instance_feature.new_tensor(time_interval)
             translation = torch.transpose(output[..., VX:], 0, -1)
             velocity = torch.transpose(translation / time_interval, 0, -1)
-            output[..., VX:] = velocity + anchor[..., VX:]
+            output[..., VX:] = velocity + anchor[..., VX:]#计算速度
 
         if return_cls:
             assert self.with_cls_branch, "Without classification layers !!!"
-            cls = self.cls_layers(instance_feature)
+            cls = self.cls_layers(instance_feature) #进行分类,居然只有10个类
         else:
             cls = None
         return output, cls

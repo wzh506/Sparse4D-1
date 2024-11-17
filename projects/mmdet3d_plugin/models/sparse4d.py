@@ -116,8 +116,8 @@ class Sparse4D(BaseDetector):
         ) #进入head进行运算，重点核心代码都在这里
         if self.use_deformable_func:
             feature_maps = DAF.feature_maps_format(feature_maps, inverse=True)
-        output = self.head.loss(cls_scores, reg_preds, data, feature_maps)
-        if depths is not None and "gt_depth" in data:
+        output = self.head.loss(cls_scores, reg_preds, data, feature_maps) #关feature map什么事
+        if depths is not None and "gt_depth" in data:#v2中会使用深度图进行监督
             output["loss_dense_depth"] = self.depth_branch.loss(
                 depths, data["gt_depth"]
             )

@@ -2,6 +2,7 @@ _base_ = [
     './sparse4d_r101_H1.py'
 ]
 
+use_deformable_func = True  # 使用CUDA实现的deformable函数
 H = 4
 max_queue_length = H - 1
 
